@@ -1,5 +1,5 @@
 import torch
-from typing import Any, List
+from typing import Any, List, Union
 from .base import BaseModel
 
 class HFModel(BaseModel):
@@ -19,28 +19,30 @@ class HFModel(BaseModel):
 
 class CausalModel(HFModel):
     def __init__(self, 
-                 model_name_or_path: str, 
+                 model_name_or_path: Union[str, Any], 
                  model_args : dict = {},
                  config: Any = None, 
                  generation_args: dict = ..., 
                  batch_size: int = 1
                  ) -> None:
         super().__init__(model_name_or_path, config, generation_args, batch_size)
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        from transformers import AutoModelForCausalLM, AutoTokenizer, PreTrainedModel
 
-        self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path, **model_args).eval().to(self.device)
+        if isinstance(model_name_or_path, PreTrainedModel): self.model = model_name_or_path.eval().to(self.device)
+        else: self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path, **model_args).eval().to(self.device)
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
 
 class Seq2SeqModel(HFModel):
     def __init__(self, 
-                 model_name_or_path: str, 
+                 model_name_or_path: Union[str, Any], 
                  model_args : dict = {},
                  config: Any = None, 
                  generation_args: dict = ..., 
                  batch_size: int = 1
                  ) -> None:
         super().__init__(model_name_or_path, config, generation_args, batch_size)
-        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+        from transformers import AutoModelForSeq2SeqLM, AutoTokenizer, PreTrainedModel
 
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name_or_path, **model_args).eval().to(self.device)
+        if isinstance(model_name_or_path, PreTrainedModel): self.model = model_name_or_path.eval().to(self.device)
+        else: self.model = AutoModelForSeq2SeqLM.from_pretrained(model_name_or_path, **model_args).eval().to(self.device) 
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
