@@ -16,6 +16,10 @@ class HFModel(BaseModel):
         outputs = self.model.generate(**inputs, **self.generation_args)
 
         return self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+    
+'''
+Both models can optionally take in a PreTrainedModel object as the model_name_or_path argument to allow more fancy setups
+'''
 
 class CausalModel(HFModel):
     def __init__(self, 
