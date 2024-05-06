@@ -32,6 +32,14 @@ class AutoPrompt(object):
     
     @staticmethod
     def from_json(json_str : str) -> 'AutoPrompt':
+        '''
+        Expects a JSON string with the following format:
+        {
+            "prompt" : "Prompt string",
+            "name" : "AutoPrompt",
+            "description" : "Self Parsing Prompt"
+        }
+        '''
         return loads(json_str, object_hook=lambda x: AutoPrompt(**x))
     
     @staticmethod
